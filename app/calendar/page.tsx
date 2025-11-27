@@ -4,157 +4,157 @@ import React, { useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, Plus, X, Info } from 'lucide-react';
 
 const CanvasCalendar = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 8, 1)); // September 2025
-  const [showEventModal, setShowEventModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [events, setEvents] = useState<Record<string, Array<{
-    title: string;
-    location: string;
-    startTime: string;
-    endTime: string;
-    frequency: string;
-    id: number;
-    isExam?: boolean;
-  }>>>({});
-  const [eventForm, setEventForm] = useState({
-    title: '',
-    location: '',
-    startTime: '',
-    endTime: '',
-    frequency: 'Does not repeat'
-  });
-  const [showExamAnimation, setShowExamAnimation] = useState(false);
-
-  const getTodayEvents = () => {
-    const today = new Date();
-    const dateKey = today.toISOString().split('T')[0];
-    return events[dateKey] || [];
-  };
-
-  const deleteEvent = (dateKey: string, eventId: number) => {
-    setEvents(prev => ({
-      ...prev,
-      [dateKey]: prev[dateKey].filter(event => event.id !== eventId)
-    }));
-  };
-
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                  'July', 'August', 'September', 'October', 'November', 'December'];
-  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-    
-    return { daysInMonth, startingDayOfWeek };
-  };
-
-  const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-  };
-
-  const handleDayClick = (day: number) => {
-    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    setSelectedDate(date);
-    setShowEventModal(true);
-  };
-
-  const handleSubmitEvent = () => {
-    if (!eventForm.title || !selectedDate) return;
-    
-    const dateKey = selectedDate.toISOString().split('T')[0];
-    const isExam = eventForm.title.toLowerCase().includes('exam');
-    const newEvent = {
-      ...eventForm,
-      id: Date.now(),
-      isExam
-    };
-    
-    setEvents(prev => ({
-      ...prev,
-      [dateKey]: [...(prev[dateKey] || []), newEvent]
-    }));
-    
-    if (isExam) {
-      setShowExamAnimation(true);
-      
-      // Play circus music
-      const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-      audio.volume = 0.5;
-      audio.play();
-      
-      setTimeout(() => {
-        setShowExamAnimation(false);
-        audio.pause();
-        audio.currentTime = 0;
-      }, 3000);
-    }
-    
-    setEventForm({
-      title: '',
-      location: '',
-      startTime: '',
-      endTime: '',
-      frequency: 'Does not repeat'
+    const [currentMonth, setCurrentMonth] = useState(new Date(2025, 8, 1)); // September 2025
+    const [showEventModal, setShowEventModal] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [events, setEvents] = useState<Record<string, Array<{
+        title: string;
+        location: string;
+        startTime: string;
+        endTime: string;
+        frequency: string;
+        id: number;
+        isExam?: boolean;
+    }>>>({});
+    const [eventForm, setEventForm] = useState({
+        title: '',
+        location: '',
+        startTime: '',
+        endTime: '',
+        frequency: 'Does not repeat'
     });
-    setShowEventModal(false);
-  };
+    const [showExamAnimation, setShowExamAnimation] = useState(false);
 
-  const formatDate = (date: Date) => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-  };
+    const getTodayEvents = () => {
+        const today = new Date();
+        const dateKey = today.toISOString().split('T')[0];
+        return events[dateKey] || [];
+    };
 
-  const renderCalendar = () => {
-    const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth);
-    const days = [];
-    
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
-    }
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-      const dateKey = date.toISOString().split('T')[0];
-      const dayEvents = events[dateKey] || [];
-      const isToday = new Date().toDateString() === date.toDateString();
-      
-      days.push(
-        <div 
-          key={day} 
-          className={`calendar-day ${isToday ? 'today' : ''}`}
-          onClick={() => handleDayClick(day)}
-        >
-          <div className="day-number">{day}</div>
-          <div className="events-container">
-            {dayEvents.slice(0, 3).map(event => (
-              <div key={event.id} className={`event-item ${event.isExam ? 'exam-event' : ''}`}>
-                {event.isExam ? '📚 ' : ''}{event.title}
-              </div>
-            ))}
-            {dayEvents.length > 3 && (
-              <div className="more-events">+{dayEvents.length - 3} more</div>
-            )}
-          </div>
-        </div>
-      );
-    }
-    
-    return days;
-  };
+    const deleteEvent = (dateKey: string, eventId: number) => {
+        setEvents(prev => ({
+            ...prev,
+            [dateKey]: prev[dateKey].filter(event => event.id !== eventId)
+        }));
+    };
 
-  return (
-    <div className="canvas-container">
-      <style>{`
+    const months = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+    const getDaysInMonth = (date: Date) => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay();
+
+        return { daysInMonth, startingDayOfWeek };
+    };
+
+    const handlePrevMonth = () => {
+        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+    };
+
+    const handleNextMonth = () => {
+        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+    };
+
+    const handleDayClick = (day: number) => {
+        const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+        setSelectedDate(date);
+        setShowEventModal(true);
+    };
+
+    const handleSubmitEvent = () => {
+        if (!eventForm.title || !selectedDate) return;
+
+        const dateKey = selectedDate.toISOString().split('T')[0];
+        const isExam = eventForm.title.toLowerCase().includes('exam');
+        const newEvent = {
+            ...eventForm,
+            id: Date.now(),
+            isExam
+        };
+
+        setEvents(prev => ({
+            ...prev,
+            [dateKey]: [...(prev[dateKey] || []), newEvent]
+        }));
+
+        if (isExam) {
+            setShowExamAnimation(true);
+
+            // Play circus music
+            const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+            audio.volume = 0.5;
+            audio.play();
+
+            setTimeout(() => {
+                setShowExamAnimation(false);
+                audio.pause();
+                audio.currentTime = 0;
+            }, 3000);
+        }
+
+        setEventForm({
+            title: '',
+            location: '',
+            startTime: '',
+            endTime: '',
+            frequency: 'Does not repeat'
+        });
+        setShowEventModal(false);
+    };
+
+    const formatDate = (date: Date) => {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+    };
+
+    const renderCalendar = () => {
+        const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth);
+        const days = [];
+
+        for (let i = 0; i < startingDayOfWeek; i++) {
+            days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+            const dateKey = date.toISOString().split('T')[0];
+            const dayEvents = events[dateKey] || [];
+            const isToday = new Date().toDateString() === date.toDateString();
+
+            days.push(
+                <div
+                    key={day}
+                    className={`calendar-day ${isToday ? 'today' : ''}`}
+                    onClick={() => handleDayClick(day)}
+                >
+                    <div className="day-number">{day}</div>
+                    <div className="events-container">
+                        {dayEvents.slice(0, 3).map(event => (
+                            <div key={event.id} className={`event-item ${event.isExam ? 'exam-event' : ''}`}>
+                                {event.isExam ? '📚 ' : ''}{event.title}
+                            </div>
+                        ))}
+                        {dayEvents.length > 3 && (
+                            <div className="more-events">+{dayEvents.length - 3} more</div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        return days;
+    };
+
+    return (
+        <div className="canvas-container">
+            <style>{`
         * {
           margin: 0;
           padding: 0;
@@ -630,9 +630,11 @@ const CanvasCalendar = () => {
         }
 
         .banner-gifs img {
-          height: 60px;
+          position: relative; /* remove absolute positioning */
+          height: 120px;      /* bigger GIFs */
           width: auto;
           object-fit: contain;
+          flex-shrink: 0;
         }
 
         @keyframes scrollGifs {
@@ -775,300 +777,382 @@ const CanvasCalendar = () => {
         }
       `}</style>
 
-      <div className="sidebar">
-        <div className="logo">UBC</div>
-        <div className="nav-item">Account</div>
-        <div className="nav-item">Dashboard</div>
-        <div className="nav-item">Courses</div>
-        <div className="nav-item active">
-          <Calendar size={24} />
-          <span>Calendar</span>
-        </div>
-        <div className="nav-item">Inbox</div>
-        <div className="nav-item">History</div>
-        <div className="nav-item">Help</div>
-      </div>
-
-      {/* Top Banner */}
-      <div className="today-events-banner top">
-          <div className="banner-gifs">
-          <img 
-            src="/aa.png"  
-            alt="Explosion" 
-            className="explosion-gif"
-          />
-           <img 
-            src="/bb.png"  
-            alt="Explosion" 
-            className="explosion-gif"
-          />
-           <img 
-            src="/cc.png"  
-            alt="Explosion" 
-            className="explosion-gif"
-          />
-           <img 
-            src="/dd.png"  
-            alt="Explosion" 
-            className="explosion-gif"
-          />
-          <img 
-            src="/sadhamstergirl.gif"  
-            alt="Explosion" 
-            className="explosion-gif"
-          />
-          </div>
-          <div className="banner-content">
-            <div className="banner-title">📅 Today's Events</div>
-            {getTodayEvents().length > 0 ? (
-              <div className="banner-events">
-                {getTodayEvents().map(event => {
-                  const today = new Date();
-                  const dateKey = today.toISOString().split('T')[0];
-                  return (
-                    <div key={event.id} className="banner-event">
-                      <div className="banner-event-info">
-                        <div className={`banner-event-title ${event.isExam ? 'exam' : ''}`}>
-                          {event.isExam && '🤡 '}{event.title}
-                        </div>
-                        <div className="banner-event-details">
-                          {event.startTime && event.endTime && `${event.startTime} - ${event.endTime}`}
-                          {event.location && ` • ${event.location}`}
-                        </div>
-                      </div>
-                      <button 
-                        className="delete-event-btn"
-                        onClick={() => deleteEvent(dateKey, event.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="no-events-message">No events scheduled for today! 🎉</div>
-            )}
-          </div>
-        </div>
-
-      <div className={`main-content main-content-with-banners`}>
-        {getTodayEvents().length > 0 && (
-          <div className="today-events-banner">
-            <div className="banner-gifs">
-              🎉🎊🎈🎁🌟✨🎯🎪🎨🎭🎉🎊🎈🎁🌟✨🎯🎪🎨🎭🎉🎊🎈🎁🌟✨🎯🎪🎨🎭
-            </div>
-            <div className="banner-content">
-              <div className="banner-title">📅 Today's Events</div>
-              <div className="banner-events">
-                {getTodayEvents().map(event => {
-                  const today = new Date();
-                  const dateKey = today.toISOString().split('T')[0];
-                  return (
-                    <div key={event.id} className="banner-event">
-                      <div className="banner-event-info">
-                        <div className={`banner-event-title ${event.isExam ? 'exam' : ''}`}>
-                          {event.isExam && '🤡 '}{event.title}
-                        </div>
-                        <div className="banner-event-details">
-                          {event.startTime && event.endTime && `${event.startTime} - ${event.endTime}`}
-                          {event.location && ` • ${event.location}`}
-                        </div>
-                      </div>
-                      <button 
-                        className="delete-event-btn"
-                        onClick={() => deleteEvent(dateKey, event.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="header">
-          <button className="today-btn" onClick={() => setCurrentMonth(new Date())}>
-            Today
-          </button>
-          <div className="month-nav">
-            <button className="nav-arrow" onClick={handlePrevMonth}>
-              <ChevronLeft size={20} />
-            </button>
-            <button className="nav-arrow" onClick={handleNextMonth}>
-              <ChevronRight size={20} />
-            </button>
-            <h1 className="month-title">
-              {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-            </h1>
-          </div>
-          <div className="view-buttons">
-            <button className="view-btn">Week</button>
-            <button className="view-btn active">Month</button>
-            <button className="view-btn">Agenda</button>
-          </div>
-          <button className="add-btn">
-            <Plus size={20} />
-          </button>
-        </div>
-
-        <div className="calendar-grid-container">
-          <div className="calendar-header">
-            {daysOfWeek.map(day => (
-              <div key={day} className="day-header">{day}</div>
-            ))}
-          </div>
-          <div className="calendar-grid">
-            {renderCalendar()}
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Banner */}
-      <div className="today-events-banner bottom">
-          <div className="banner-gifs">
-            🎭🎨🎪🎯✨🌟🎁🎈🎊🎉🎭🎨🎪🎯✨🌟🎁🎈🎊🎉🎭🎨🎪🎯✨🌟🎁🎈🎊🎉🎭🎨🎪🎯✨🌟🎁🎈🎊🎉
-          </div>
-          <div className="banner-content">
-            <div className="banner-title">⏰ Don't Forget!</div>
-            {getTodayEvents().length > 0 ? (
-              <div className="banner-events">
-                {getTodayEvents().map(event => {
-                  const today = new Date();
-                  const dateKey = today.toISOString().split('T')[0];
-                  return (
-                    <div key={event.id} className="banner-event">
-                      <div className="banner-event-info">
-                        <div className={`banner-event-title ${event.isExam ? 'exam' : ''}`}>
-                          {event.isExam && '🤡 '}{event.title}
-                        </div>
-                        <div className="banner-event-details">
-                          {event.startTime && event.endTime && `${event.startTime} - ${event.endTime}`}
-                          {event.location && ` • ${event.location}`}
-                        </div>
-                      </div>
-                      <button 
-                        className="delete-event-btn"
-                        onClick={() => deleteEvent(dateKey, event.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="no-events-message">Nothing on your schedule today! 🌟</div>
-            )}
-          </div>
-        </div>
-
-      {showEventModal && (
-        <div className="modal-overlay" onClick={() => setShowEventModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">Edit Event</h2>
-              <button className="close-btn" onClick={() => setShowEventModal(false)}>
-                <X size={24} />
-              </button>
-            </div>
-            <div className="tabs">
-              <button className="tab">Event</button>
-              <button className="tab active">My To Do</button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">Title</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Input Event Title..."
-                  value={eventForm.title}
-                  onChange={e => setEventForm({...eventForm, title: e.target.value})}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">
-                  Date <Info size={16} />
-                </label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={selectedDate ? formatDate(selectedDate) : ''}
-                  readOnly
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">From</label>
-                <div className="time-row">
-                  <input 
-                    type="time" 
-                    className="form-input"
-                    value={eventForm.startTime}
-                    onChange={e => setEventForm({...eventForm, startTime: e.target.value})}
-                  />
-                  <div>
-                    <label className="form-label">To</label>
-                    <input 
-                      type="time" 
-                      className="form-input"
-                      value={eventForm.endTime}
-                      onChange={e => setEventForm({...eventForm, endTime: e.target.value})}
-                    />
-                  </div>
+            <div className="sidebar">
+                <div className="logo">UBC</div>
+                <div className="nav-item">Account</div>
+                <div className="nav-item">Dashboard</div>
+                <div className="nav-item">Courses</div>
+                <div className="nav-item active">
+                    <Calendar size={24} />
+                    <span>Calendar</span>
                 </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Frequency</label>
-                <select 
-                  className="form-input"
-                  value={eventForm.frequency}
-                  onChange={e => setEventForm({...eventForm, frequency: e.target.value})}
-                >
-                  <option>Does not repeat</option>
-                  <option>Daily</option>
-                  <option>Weekly</option>
-                  <option>Monthly</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Location</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Input Event Location..."
-                  value={eventForm.location}
-                  onChange={e => setEventForm({...eventForm, location: e.target.value})}
-                />
-              </div>
+                <div className="nav-item">Inbox</div>
+                <div className="nav-item">History</div>
+                <div className="nav-item">Help</div>
             </div>
-            <div className="modal-footer">
-              <button className="btn btn-secondary">More Options</button>
-              <button className="btn btn-primary" onClick={handleSubmitEvent}>
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {showExamAnimation && (
-        <div className="exam-animation-overlay">
-          <div className="clown-background">
-            🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡
-          </div>
-          <img 
-            src="/sadhamstergirl.gif"  
-            alt="Explosion" 
-            className="explosion-gif"
-          />
-          <div className="exam-text">EXAM! 📝</div>
+            {/* Top Banner */}
+            <div className="today-events-banner top">
+                <div className="banner-gifs">
+                    <img
+                        src="/aa.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/bb.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/ee.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/cc.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/ff.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/dd.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/sadhamstergirl.gif"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                </div>
+                <div className="banner-content">
+                    <div className="banner-title">📅 Today's Events</div>
+                    {getTodayEvents().length > 0 ? (
+                        <div className="banner-events">
+                            {getTodayEvents().map(event => {
+                                const today = new Date();
+                                const dateKey = today.toISOString().split('T')[0];
+                                return (
+                                    <div key={event.id} className="banner-event">
+                                        <div className="banner-event-info">
+                                            <div className={`banner-event-title ${event.isExam ? 'exam' : ''}`}>
+                                                {event.isExam && '🤡 '}{event.title}
+                                            </div>
+                                            <div className="banner-event-details">
+                                                {event.startTime && event.endTime && `${event.startTime} - ${event.endTime}`}
+                                                {event.location && ` • ${event.location}`}
+                                            </div>
+                                        </div>
+                                        <button
+                                            className="delete-event-btn"
+                                            onClick={() => deleteEvent(dateKey, event.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="no-events-message">No events scheduled for today! 🎉</div>
+                    )}
+                </div>
+            </div>
+
+            <div className={`main-content main-content-with-banners`}>
+                {getTodayEvents().length > 0 && (
+                    <div className="today-events-banner">
+                        <div className="banner-gifs">
+                        <img
+                        src="/dd.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/aa.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                   
+                    <img
+                        src="/ee.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                     <img
+                        src="/bb.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/cc.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/ff.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    
+                    <img
+                        src="/sadhamstergirl.gif"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    /> 
+                    </div>
+                        <div className="banner-content">
+                            <div className="banner-title">📅 Today's Events</div>
+                            <div className="banner-events">
+                                {getTodayEvents().map(event => {
+                                    const today = new Date();
+                                    const dateKey = today.toISOString().split('T')[0];
+                                    return (
+                                        <div key={event.id} className="banner-event">
+                                            <div className="banner-event-info">
+                                                <div className={`banner-event-title ${event.isExam ? 'exam' : ''}`}>
+                                                    {event.isExam && '🤡 '}{event.title}
+                                                </div>
+                                                <div className="banner-event-details">
+                                                    {event.startTime && event.endTime && `${event.startTime} - ${event.endTime}`}
+                                                    {event.location && ` • ${event.location}`}
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="delete-event-btn"
+                                                onClick={() => deleteEvent(dateKey, event.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div className="header">
+                    <button className="today-btn" onClick={() => setCurrentMonth(new Date())}>
+                        Today
+                    </button>
+                    <div className="month-nav">
+                        <button className="nav-arrow" onClick={handlePrevMonth}>
+                            <ChevronLeft size={20} />
+                        </button>
+                        <button className="nav-arrow" onClick={handleNextMonth}>
+                            <ChevronRight size={20} />
+                        </button>
+                        <h1 className="month-title">
+                            {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                        </h1>
+                    </div>
+                    <div className="view-buttons">
+                        <button className="view-btn">Week</button>
+                        <button className="view-btn active">Month</button>
+                        <button className="view-btn">Agenda</button>
+                    </div>
+                    <button className="add-btn">
+                        <Plus size={20} />
+                    </button>
+                </div>
+
+                <div className="calendar-grid-container">
+                    <div className="calendar-header">
+                        {daysOfWeek.map(day => (
+                            <div key={day} className="day-header">{day}</div>
+                        ))}
+                    </div>
+                    <div className="calendar-grid">
+                        {renderCalendar()}
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom Banner */}
+            <div className="today-events-banner bottom">
+            <div className="banner-gifs">
+                    <img
+                        src="/bb.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    
+                    <img
+                        src="/dd.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/ff.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/cc.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <img
+                        src="/aa.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                     <img
+                        src="/ee.png"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                   
+                    <img
+                        src="/sadhamstergirl.gif"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                </div>
+                <div className="banner-content">
+                    <div className="banner-title">⏰ Don't Forget!</div>
+                    {getTodayEvents().length > 0 ? (
+                        <div className="banner-events">
+                            {getTodayEvents().map(event => {
+                                const today = new Date();
+                                const dateKey = today.toISOString().split('T')[0];
+                                return (
+                                    <div key={event.id} className="banner-event">
+                                        <div className="banner-event-info">
+                                            <div className={`banner-event-title ${event.isExam ? 'exam' : ''}`}>
+                                                {event.isExam && '🤡 '}{event.title}
+                                            </div>
+                                            <div className="banner-event-details">
+                                                {event.startTime && event.endTime && `${event.startTime} - ${event.endTime}`}
+                                                {event.location && ` • ${event.location}`}
+                                            </div>
+                                        </div>
+                                        <button
+                                            className="delete-event-btn"
+                                            onClick={() => deleteEvent(dateKey, event.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="no-events-message">Nothing on your schedule today! 🌟</div>
+                    )}
+                </div>
+            </div>
+
+            {showEventModal && (
+                <div className="modal-overlay" onClick={() => setShowEventModal(false)}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">Edit Event</h2>
+                            <button className="close-btn" onClick={() => setShowEventModal(false)}>
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="tabs">
+                            <button className="tab">Event</button>
+                            <button className="tab active">My To Do</button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <label className="form-label">Title</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Input Event Title..."
+                                    value={eventForm.title}
+                                    onChange={e => setEventForm({ ...eventForm, title: e.target.value })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">
+                                    Date <Info size={16} />
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={selectedDate ? formatDate(selectedDate) : ''}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">From</label>
+                                <div className="time-row">
+                                    <input
+                                        type="time"
+                                        className="form-input"
+                                        value={eventForm.startTime}
+                                        onChange={e => setEventForm({ ...eventForm, startTime: e.target.value })}
+                                    />
+                                    <div>
+                                        <label className="form-label">To</label>
+                                        <input
+                                            type="time"
+                                            className="form-input"
+                                            value={eventForm.endTime}
+                                            onChange={e => setEventForm({ ...eventForm, endTime: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Frequency</label>
+                                <select
+                                    className="form-input"
+                                    value={eventForm.frequency}
+                                    onChange={e => setEventForm({ ...eventForm, frequency: e.target.value })}
+                                >
+                                    <option>Does not repeat</option>
+                                    <option>Daily</option>
+                                    <option>Weekly</option>
+                                    <option>Monthly</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Location</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Input Event Location..."
+                                    value={eventForm.location}
+                                    onChange={e => setEventForm({ ...eventForm, location: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn btn-secondary">More Options</button>
+                            <button className="btn btn-primary" onClick={handleSubmitEvent}>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showExamAnimation && (
+                <div className="exam-animation-overlay">
+                    <div className="clown-background">
+                        🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡
+                    </div>
+                    <img
+                        src="/sadhamstergirl.gif"
+                        alt="Explosion"
+                        className="explosion-gif"
+                    />
+                    <div className="exam-text">EXAM! 📝</div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default CanvasCalendar;
