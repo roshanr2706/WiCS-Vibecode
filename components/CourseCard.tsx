@@ -7,9 +7,10 @@ interface CourseCardProps {
     term: string
     color: string
     image?: string
+    href?: string
 }
 
-export function CourseCard({ title, code, term, color, image }: CourseCardProps) {
+export function CourseCard({ title, code, term, color, image, href = "#" }: CourseCardProps) {
     return (
         <div className="group flex flex-col bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow h-[260px]">
             {/* Card Header / Image */}
@@ -36,7 +37,7 @@ export function CourseCard({ title, code, term, color, image }: CourseCardProps)
 
             {/* Card Content */}
             <div className="p-4 flex-1 flex flex-col">
-                <Link href="#" className="block">
+                <Link href={href} className="block">
                     <h3 className="text-[#2D3B45] font-bold text-sm leading-tight mb-1 group-hover:underline line-clamp-2">
                         {title}
                     </h3>
