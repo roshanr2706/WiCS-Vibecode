@@ -1,82 +1,82 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { GlobalNav } from "@/components/GlobalNav"
+import { DashboardHeader } from "@/components/DashboardHeader"
+import { CourseCard } from "@/components/CourseCard"
+import { RightSidebar } from "@/components/RightSidebar"
+
+const courses = [
+    {
+        title: "CS 101: Introduction to Computer Science",
+        code: "CS 101",
+        term: "Fall 2024",
+        color: "#4A90E2", // Blue
+        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        title: "MATH 101: Calculus I",
+        code: "MATH 101",
+        term: "Fall 2024",
+        color: "#E24A4A", // Red
+        image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        title: "HIST 202: World History",
+        code: "HIST 202",
+        term: "Fall 2024",
+        color: "#F5A623", // Orange
+        image: "https://images.unsplash.com/photo-1447069387593-a5de0862481e?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        title: "CHEM 101: General Chemistry",
+        code: "CHEM 101",
+        term: "Fall 2024",
+        color: "#7ED321", // Green
+        image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        title: "ENG 101: English Composition",
+        code: "ENG 101",
+        term: "Fall 2024",
+        color: "#9013FE", // Purple
+        image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        title: "ART 101: Art History",
+        code: "ART 101",
+        term: "Fall 2024",
+        color: "#50E3C2", // Teal
+        image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        title: "CPSC 310: Game Development",
+        code: "CPSC 310",
+        term: "Fall 2024",
+        color: "#8B5CF6", // Violet
+        image: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=80&w=1000&auto=format&fit=crop",
+        href: "/ubc-survival"
+    }
+]
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Hackathon Boilerplate</h1>
-          <p className="text-xl text-gray-600 mb-8">
-            A ready-to-use Next.js + Tailwind CSS starter for your next hackathon project. Start building amazing things
-            in minutes!
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" asChild>
-              <Link href="/about">Get Started</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <a href="https://nextjs.org/docs" target="_blank" rel="noopener noreferrer">
-                View Docs
-              </a>
-            </Button>
-          </div>
-        </div>
+    return (
+        <div className="flex min-h-screen bg-[#F5F5F5]">
+            <GlobalNav />
 
-        {/* Features Grid */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <FeatureCard
-            title="⚡ Fast Setup"
-            description="Get started in seconds with npm install and npm run dev. No complex configuration needed."
-          />
-          <FeatureCard
-            title="🎨 Tailwind CSS"
-            description="Beautiful, responsive designs with utility-first CSS. No need to write custom stylesheets."
-          />
-          <FeatureCard
-            title="🚀 Next.js Power"
-            description="Full-stack framework with API routes, server components, and optimized performance."
-          />
-          <FeatureCard
-            title="📱 Mobile First"
-            description="Responsive by default. Your app looks great on all devices out of the box."
-          />
-          <FeatureCard
-            title="🔧 Developer Friendly"
-            description="Hot reload, TypeScript support, and excellent error messages for fast development."
-          />
-          <FeatureCard
-            title="☁️ Easy Deploy"
-            description="Deploy to Vercel with one click. Your app goes live in minutes, not hours."
-          />
-        </div>
+            <div className="flex-1 ml-[84px] flex">
+                <main className="flex-1 p-6 md:p-8">
+                    <DashboardHeader />
 
-        {/* Quick Start Section */}
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Quick Start</h2>
-          <div className="bg-gray-900 text-gray-100 rounded-lg p-6 font-mono text-sm">
-            <div className="mb-2">
-              <span className="text-gray-500"># Install dependencies</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                        {courses.map((course, index) => (
+                            <CourseCard
+                                key={index}
+                                {...course}
+                            />
+                        ))}
+                    </div>
+                </main>
+
+                <RightSidebar />
             </div>
-            <div className="mb-4">npm install</div>
-            <div className="mb-2">
-              <span className="text-gray-500"># Start development server</span>
-            </div>
-            <div className="mb-4">npm run dev</div>
-            <div className="text-green-400">✓ Ready on http://localhost:3000</div>
-          </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-function FeatureCard({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-bold mb-3">{title}</h3>
-      <p className="text-gray-600">{description}</p>
-    </div>
-  )
+    )
 }
