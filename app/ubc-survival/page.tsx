@@ -13,7 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Zap, Skull, GraduationCap, MapPin, ArrowRight, RotateCcw, User, Calendar, Sparkles, Flag, AlertTriangle, BookOpen } from 'lucide-react';
+import { Heart, Zap, Skull, GraduationCap, MapPin, ArrowRight, RotateCcw, User, Calendar, Sparkles, Flag, AlertTriangle, BookOpen, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 type Screen = 'start' | 'game' | 'end' | 'game-over';
 
@@ -248,6 +249,15 @@ export default function UBCSurvivalGame() {
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[100px] animate-pulse" />
                 <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-purple-900/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+            </div>
+
+            {/* Back to Dashboard Button */}
+            <div className="absolute top-4 left-4 z-50">
+                <Link href="/">
+                    <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-slate-800/50">
+                        <ArrowLeft className="mr-2 w-4 h-4" /> Back to Dashboard
+                    </Button>
+                </Link>
             </div>
 
             {/* LEFT SIDEBAR: PROFILE */}

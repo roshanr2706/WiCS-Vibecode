@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { LayoutDashboard, BookOpen, Calendar, Inbox, History, CircleHelp, User } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -7,10 +8,14 @@ interface NavItemProps {
     icon: React.ReactNode
     label: string
     href: string
-    isActive?: boolean
 }
 
-function NavItem({ icon, label, href, isActive }: NavItemProps) {
+function NavItem({ icon, label, href }: NavItemProps) {
+    const pathname = usePathname()
+    // Check if the current path starts with the href (for nested routes)
+    // But handle root path "/" specifically to avoid matching everything
+    const isActive = href === "/" ? pathname === "/" : pathname?.startsWith(href)
+
     return (
         <TooltipProvider>
             <Tooltip delayDuration={0}>
@@ -48,38 +53,37 @@ export function GlobalNav() {
                 <NavItem
                     icon={<User className="w-6 h-6" />}
                     label="Account"
-                    href="#"
+                    href="/account"
                 />
                 <NavItem
                     icon={<LayoutDashboard className="w-6 h-6" />}
                     label="Dashboard"
-                    href="#"
-                    isActive
+                    href="/"
                 />
                 <NavItem
                     icon={<BookOpen className="w-6 h-6" />}
                     label="Courses"
-                    href="#"
+                    href="/courses"
                 />
                 <NavItem
                     icon={<Calendar className="w-6 h-6" />}
                     label="Calendar"
-                    href="#"
+                    href="/calendar"
                 />
                 <NavItem
                     icon={<Inbox className="w-6 h-6" />}
                     label="Inbox"
-                    href="#"
+                    href="/inbox"
                 />
                 <NavItem
                     icon={<History className="w-6 h-6" />}
                     label="History"
-                    href="#"
+                    href="/history"
                 />
                 <NavItem
                     icon={<CircleHelp className="w-6 h-6" />}
                     label="Help"
-                    href="#"
+                    href="/help"
                 />
             </div>
         </nav>

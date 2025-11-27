@@ -1,5 +1,6 @@
 import { Megaphone, FileText, MessageSquare, Folder } from "lucide-react"
 import Link from "next/link"
+import { SpotlightCard } from "./ui/SpotlightCard"
 
 interface CourseCardProps {
     title: string
@@ -12,7 +13,7 @@ interface CourseCardProps {
 
 export function CourseCard({ title, code, term, color, image, href = "#" }: CourseCardProps) {
     return (
-        <div className="group flex flex-col bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow h-[260px]">
+        <SpotlightCard className="group flex flex-col bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow h-[260px]">
             {/* Card Header / Image */}
             <div
                 className="h-36 w-full relative"
@@ -61,6 +62,6 @@ export function CourseCard({ title, code, term, color, image, href = "#" }: Cour
                     <Folder className="w-5 h-5" />
                 </Link>
             </div>
-        </div>
+        </SpotlightCard>
     )
 }
